@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "axios": "^1.6.7"
+  },
+  "name": "pix-payment-efibank",
+  "description": "Integration API Efi Bank",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "API",
+    "Pix",
+    "Efi",
+    "Bank"
+  ],
+  "author": "Carlos Eduardo Zancanella Pereira",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^16.4.5",
+    "nodemon": "^3.1.0"
+  }
+}
