@@ -131,3 +131,4 @@ dist
 
 certificates/
 node_modules/
+.env
