@@ -2,4 +2,4 @@ EB_CLIENT_ID = /* Your cliente_id */
 EB_CLIENT_SECRET = /* Your client_secret*/
 EB_ENDPOINT = /* Base End Point - https://pix-h.api.efipay.com.br */
 NODE_ENV = /* Your enviroment - "development" / "production" */
-EB_CERT = /* Name of your certificate with ".p12" extentision */
+EB_CERT = /* Name of your certificate with ".p12" extention */
