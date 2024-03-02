@@ -20,9 +20,11 @@ const credentials = Buffer.from(
         `${process.env.EB_CLIENT_ID}:${process.env.EB_CLIENT_SECRET}`
     ).toString('base64');
 
+const baseUrl = process.env.EB_ENDPOINT;
+
 axios({
     method: 'POST',
-    url: `${process.env.EB_ENDPOINT}/oauth/token`,
+    url: `${baseUrl}/oauth/token`,
     headers:{
         Authorization: `Basic ${credentials}`,
         "Content-Type": "application/json"
@@ -33,7 +35,16 @@ axios({
     }
 }).then((response) => {
     const accessToken = response.data?.access_token;
-    const endpoint = `${process.env.EB_ENDPOINT}/v2/cob`;
+
+    const reqEB = axios.create({
+      baseURL: baseUrl,
+      httpsAgent: agent,
+      headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Scope': 'cob.write',
+          'Content-Type': 'application/json'
+      }
+    })
 
     const dataCob = {
         calendario: {
@@ -50,16 +61,9 @@ axios({
         solicitacaoPagador: "Cobrança dos serviços prestados."
     };
 
-    const config = {
-      httpsAgent: agent,
-      headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Scope': 'cob.write',
-          'Content-Type': 'application/json'
-      }
-    };
-
-    axios.post(endpoint, dataCob, config).then(response => {
-      console.log('Resposta da API:', response.data);
+    reqEB.post('/v2/cob',dataCob).then(response => {
+      const id = response.data.loc.id;
+      console.log(response.data);
+      console.log(`Id = ${id}`);
     });  
 });
