@@ -4,8 +4,10 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express');
 const EBResquest = require('./apis/efi-bank');
-
+const bodyParser = require('body-parser');
 const app = express();
+
+app.use(bodyParser.json());
 
 app.listen('8000', () => {
   console.log('running');
@@ -48,4 +50,9 @@ app.get('/cobrancas', async (req,res) => {
 
   const cobResponse = await reqEB.get(`/v2/cob?inicio=2020-10-22T16:01:35Z&fim=${currentDate}`);
   res.send(cobResponse.data);
+});
+
+app.post('/webhook(/pix)?',(req,res) => {
+  console.log(req.body);
+  res.send('200');
 });
