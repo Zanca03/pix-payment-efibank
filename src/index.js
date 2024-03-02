@@ -13,7 +13,10 @@ app.listen('8000', () => {
 app.set('view engine', 'ejs');
 app.set('views', 'src/views');
 
-const reqEBAlready = EBResquest();
+const reqEBAlready = EBResquest({
+  clientId: process.env.EB_CLIENT_ID,
+  clientSecret: process.env.EB_CLIENT_SECRET
+});
 
 app.get('/', async (req, res) => {
   const reqEB = await reqEBAlready;
@@ -37,4 +40,12 @@ app.get('/', async (req, res) => {
 
   const qrCodeResponse = await reqEB.get(`/v2/loc/${cobId}/qrcode`);
   res.render('qrcode', { qrCodeImage: qrCodeResponse.data?.imagemQrcode });
+});
+
+app.get('/cobrancas', async (req,res) => {
+  const reqEB = await reqEBAlready;
+  const currentDate = new Date().toJSON();
+
+  const cobResponse = await reqEB.get(`/v2/cob?inicio=2020-10-22T16:01:35Z&fim=${currentDate}`);
+  res.send(cobResponse.data);
 });
