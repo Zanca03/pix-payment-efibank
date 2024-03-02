@@ -2,11 +2,8 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
-const https = require('https');
 const express = require('express');
+const EBResquest = require('./apis/efi-bank');
 
 const app = express();
 
@@ -16,47 +13,10 @@ app.listen('8000', () => {
 app.set('view engine', 'ejs');
 app.set('views', 'src/views');
 
+const reqEBAlready = EBResquest();
+
 app.get('/', async (req, res) => {
-  const cert = fs.readFileSync(
-    path.resolve(__dirname, `../certificates/${process.env.EB_CERT}`)
-  );
-
-  const agent = new https.Agent({
-    pfx: cert,
-    passphrase: ''
-  });
-
-  const credentials = Buffer.from(
-    `${process.env.EB_CLIENT_ID}:${process.env.EB_CLIENT_SECRET}`
-  ).toString('base64');
-
-  const baseUrl = process.env.EB_ENDPOINT;
-
-  const authResponse = await axios({
-    method: 'POST',
-    url: `${baseUrl}/oauth/token`,
-    headers: {
-      Authorization: `Basic ${credentials}`,
-      "Content-Type": "application/json"
-    },
-    httpsAgent: agent,
-    data: {
-      grant_type: "client_credentials"
-    }
-  })
-
-  const accessToken = authResponse.data?.access_token;
-
-  const reqEB = axios.create({
-    baseURL: baseUrl,
-    httpsAgent: agent,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Scope': 'cob.write',
-      'Content-Type': 'application/json'
-    }
-  })
-
+  const reqEB = await reqEBAlready;
   const dataCob = {
     calendario: {
       expiracao: 3600
@@ -76,5 +36,5 @@ app.get('/', async (req, res) => {
   const cobId = cobCodeResponse.data?.loc.id;
 
   const qrCodeResponse = await reqEB.get(`/v2/loc/${cobId}/qrcode`);
-  res.render('qrcode',{qrCodeImage: qrCodeResponse.data?.imagemQrcode});
+  res.render('qrcode', { qrCodeImage: qrCodeResponse.data?.imagemQrcode });
 });
