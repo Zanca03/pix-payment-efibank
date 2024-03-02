@@ -72,6 +72,9 @@ app.get('/', async (req, res) => {
     solicitacaoPagador: "Cobrança dos serviços prestados."
   };
 
-  const qrCodeResponse = await reqEB.post('/v2/cob', dataCob);
-  res.send(qrCodeResponse.data);
+  const cobCodeResponse = await reqEB.post('/v2/cob', dataCob);
+  const cobId = cobCodeResponse.data?.loc.id;
+
+  const qrCodeResponse = await reqEB.get(`/v2/loc/${cobId}/qrcode`);
+  res.render('qrcode',{qrCodeImage: qrCodeResponse.data?.imagemQrcode});
 });
