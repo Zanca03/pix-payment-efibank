@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .payment-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .btn-pay {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-pay:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h1>Pagamento</h1>
+        </div>
+        <form>
+            <div class="mb-3">
+                <label for="user-name" class="form-label">Digite seu nome completo</label>
+                <input type="text" class="form-control" id="card-number" placeholder="Ex: Fulano de Tal" required>
+            </div>
+            <div class="mb-3">
+                <label for="user-cpf" class="form-label">Digite seu CPF</label>
+                <input type="text" class="form-control" id="cpf-value" placeholder="12345678910" onblur="validateCpf(this)">
+                <div id="error-message-cpf" class="text-danger"></div>
+            </div>
+            <div class="mb-3">
+                <label for="pix-value" class="form-label">Valor de pagamento</label>
+                <input type="text" class="form-control" id="pix-value" placeholder="50.00" onblur="validateValue(this)">
+                <div id="error-message-value" class="text-danger"></div>
+            </div>
+            <button type="submit" id="btn-pay" class="btn btn-pay">Pagar</button>
+        </form>
+    </div>
+    <script>
+        var validValue = false;
+        toggleButton(validValue);
+
+        function validateValue(input) {
+            const value = input.value;
+            const isValid = /^\d+(\.\d{2})?$/.test(value);
+            const containsDecimalPoint = (value.match(/\./g) || []).length === 1;
+            const errorMessageElement = document.getElementById('error-message-value');
+
+            if (!isValid || !containsDecimalPoint) {
+                errorMessageElement.innerText = 'Digite um valor com duas casas decimais';
+                input.classList.add('is-invalid');
+                validValue = false;
+            } else {
+                
+                errorMessageElement.innerText = '';
+                input.classList.remove('is-invalid');
+                validValue = true;
+            }
+
+            toggleButton(validValue);
+        }
+
+        function validarCPF(cpf) {
+            const cpfValid = true;
+            cpfValid = /^\d+$/.test(cpf);
+
+            if (cpfValid) cpfValid = cpf.length !== 11;
+            if (cpfValid) cpfValid = /^(.)\1+$/.test(cpf); //Todos iguais
+
+            if (cpfValid) {
+                let sum = 0;
+                for (let i = 0; i < 9; i++) {
+                    sum += parseInt(cpf.charAt(i)) * (10 - i);
+                }
+                let remainder = sum % 11;
+                let digit1 = (remainder < 2) ? 0 : 11 - remainder;
+
+                cpfValid = (parseInt(cpf.charAt(9)) !== digit1);
+            }
+            if (cpfValid) {
+                sum = 0;
+                for (let i = 0; i < 10; i++) {
+                    sum += parseInt(cpf.charAt(i)) * (11 - i);
+                }
+                remainder = sum % 11;
+                let digit2 = (remainder < 2) ? 0 : 11 - remainder;
+
+                icpfValid = (parseInt(cpf.charAt(10)) !== digit2);
+            }
+
+            const errorMessageElement = document.getElementById('error-message-cpf');
+
+            if (!icpfValid) {
+                errorMessageElement.innerText = 'Digite um CPF válido';
+                input.classList.add('is-invalid');
+                validValue = false;
+            } else {
+                errorMessageElement.innerText = '';
+                input.classList.remove('is-invalid');
+                validValue = true;
+            }
+
+            toggleButton(validValue) ;
+
+        }
+
+        function toggleButton(validValue) {
+            const button = document.getElementById('btn-pay');
+            button.disabled = !validValue;
+            if (!validValue) {
+                button.classList.add('disabled-button');
+            } else {
+                button.classList.remove('disabled-button');
+            }
+        }
+    </script>
+</body>
+
+</html>

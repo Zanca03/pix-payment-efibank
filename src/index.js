@@ -5,6 +5,7 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express');
 const EBResquest = require('./apis/efi-bank');
 const bodyParser = require('body-parser');
+const path = require('path');
 const app = express();
 
 app.use(bodyParser.json());
@@ -20,7 +21,11 @@ const reqEBAlready = EBResquest({
   clientSecret: process.env.EB_CLIENT_SECRET
 });
 
-app.get('/', async (req, res) => {
+app.get('/', (req,res) => {
+  res.render('index.ejs');
+});
+
+app.get('/qrcode', async (req, res) => {
   const reqEB = await reqEBAlready;
   const dataCob = {
     calendario: {
