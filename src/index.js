@@ -22,38 +22,38 @@ const reqEBAlready = EBResquest({
 });
 
 app.get('/', (req,res) => {
-  res.render('index.ejs');
+  res.render('index.ejs'); //Futuramente irei remover :)
 });
 
-app.get('/qrcode', async (req, res) => {
+app.post('/pix', async (req, res) => {
+  console.log(req.body);
   const reqEB = await reqEBAlready;
   const dataCob = {
     calendario: {
       expiracao: 3600
     },
     devedor: {
-      cpf: "12345678909",
-      nome: "Francisco da Silva"
+      cpf: req.body.cpf,
+      nome: req.body.nome
     },
     valor: {
-      original: "123.45"
+      original: req.body.valor
     },
     chave: '71cdf9ba-c695-4e3c-b010-abb521a3f1be',
-    solicitacaoPagador: "Cobrança dos serviços prestados."
+    solicitacaoPagador: req.body.obs
   };
 
   const cobCodeResponse = await reqEB.post('/v2/cob', dataCob);
   const cobId = cobCodeResponse.data?.loc.id;
 
   const qrCodeResponse = await reqEB.get(`/v2/loc/${cobId}/qrcode`);
-  res.render('qrcode', { qrCodeImage: qrCodeResponse.data?.imagemQrcode });
+  //res.render('qrcode', { qrCodeImage: qrCodeResponse.data?.imagemQrcode });
+  res.send(qrCodeResponse.data);
 });
 
 app.get('/cobrancas', async (req,res) => {
   const reqEB = await reqEBAlready;
-  const currentDate = new Date().toJSON();
-
-  const cobResponse = await reqEB.get(`/v2/cob?inicio=2020-10-22T16:01:35Z&fim=${currentDate}`);
+  const cobResponse = await reqEB.get(`/v2/cob?inicio=${req.body.dataInicial}&fim=${req.body.dataFinal}`);
   res.send(cobResponse.data);
 });
 
